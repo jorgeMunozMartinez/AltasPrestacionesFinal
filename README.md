@@ -2,15 +2,15 @@
 
 Para la realización de esta práctica se ha realizado varias pruebas
 
-## Optimización de los bucles 
+## Optimización de los bucles
 
 En una primera aproximación para mejorar el tiempo de cómputo. Se ha reescrito los bucles anidados.
 
-Búcle sin modificar 
-'''c
+Búcle sin modificar
+````c
 for (unsigned int y = 0; y < HEIGHT; y += BS){
   for (unsigned int x = 0; x < WIDTH; x += BS){
-    /* Calcular MSE para todos los bloques en el área de búsqueda. 
+    /* Calcular MSE para todos los bloques en el área de búsqueda.
     Las coordenadas en ref y act están alineadas.   */
     for (unsigned char j = 0; j < 2 * SA; j++){
       for (unsigned char k = 0; k < 2 * SA; k++){
@@ -26,14 +26,14 @@ for (unsigned int y = 0; y < HEIGHT; y += BS){
     }
   }
 }
-'''
+````
 
 Bucle modificado
-'''c
+````c
 for (i = 0; i < (HEIGHT * WIDTH)/BS; i += BS){
   x = i % WIDTH;
   y = (i / WIDTH) *BS;
-  /* Calcular MSE para todos los bloques en el área de búsqueda. 
+  /* Calcular MSE para todos los bloques en el área de búsqueda.
   Las coordenadas en ref y act están alineadas.   */
   for (z = 0; z < 96 * SA; z++){  
     /*Calcular MSE */
@@ -48,10 +48,10 @@ for (i = 0; i < (HEIGHT * WIDTH)/BS; i += BS){
     }
   }
 }
-'''
+````
 
 Bucle sin modificar
-'''c
+````c
 float MSE(unsigned char *bloque_actual, unsigned char *bloque_referencia){
   float error = 0;
   for (unsigned char y = 0; y < BS; y++){
@@ -61,9 +61,9 @@ float MSE(unsigned char *bloque_actual, unsigned char *bloque_referencia){
    }
  return error / (BS*BS);
 }
-'''
-Bucle modificado 
-'''c
+````
+Bucle modificado
+````c
 float MSE(unsigned char *bloque_actual, unsigned char *bloque_referencia){
   float error = 0;
   int i=0;
@@ -75,6 +75,5 @@ float MSE(unsigned char *bloque_actual, unsigned char *bloque_referencia){
     }
   return error / (BS*BS);
 }
-'''
+````
 ## OpenMP
-
