@@ -2,11 +2,11 @@
 
 Para la realización de esta práctica se ha realizado varias pruebas
 
-## Optimización de los bucles
+## Bucles Optimizados
 
 En una primera aproximación para mejorar el tiempo de cómputo. Se ha reescrito los bucles anidados.
 
-Búcle sin modificar
+**Búcle sin modificar**
 ````c
 for (unsigned int y = 0; y < HEIGHT; y += BS){
   for (unsigned int x = 0; x < WIDTH; x += BS){
@@ -28,7 +28,7 @@ for (unsigned int y = 0; y < HEIGHT; y += BS){
 }
 ````
 
-Bucle modificado
+**Bucle modificado**
 ````c
 for (i = 0; i < (HEIGHT * WIDTH)/BS; i += BS){
   x = i % WIDTH;
@@ -50,7 +50,7 @@ for (i = 0; i < (HEIGHT * WIDTH)/BS; i += BS){
 }
 ````
 
-Bucle sin modificar
+**Bucle sin modificar**
 ````c
 float MSE(unsigned char *bloque_actual, unsigned char *bloque_referencia){
   float error = 0;
@@ -62,7 +62,7 @@ float MSE(unsigned char *bloque_actual, unsigned char *bloque_referencia){
  return error / (BS*BS);
 }
 ````
-Bucle modificado
+**Bucle modificado**
 ````c
 float MSE(unsigned char *bloque_actual, unsigned char *bloque_referencia){
   float error = 0;
@@ -76,4 +76,18 @@ float MSE(unsigned char *bloque_actual, unsigned char *bloque_referencia){
   return error / (BS*BS);
 }
 ````
-## OpenMP
+### Conclusiones
+**Tiempo de ejecución sin optimizar los bucles**
+````bash
+````
+**Tiempo de ejecución con los bucles optimizados**
+````bash
+````
+
+Como se puede apreciar. La diferencia de los tiempos de ejecución, solo modificando los bucles no es significativa. **No hay casi diferencia en tiempo de ejecución entre los bucles optimizado y los sin optimizar**.
+
+## OpenMP si Bucles Optmizados
+
+
+
+## OpenMP y Bucles Optimizados
