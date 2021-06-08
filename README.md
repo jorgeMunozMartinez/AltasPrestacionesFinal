@@ -1,8 +1,15 @@
+# Índice
+1. [Sin OpenMP y con Bucles Optimizados](#id1)
+2. [Con OpenMP y sin Bucles Optimizados](#id2)
+3. [Comandos Usados](#id)
+4. [Conclusiones Finales](#id)
+5. [Problemas](#id)
+
 # Reducción del tiempo de cómputo de la etapa de estimación de movimiento en algoritmos de codificación de vídeo
 
 Para la realización de esta práctica se ha realizado varias pruebas.
 
-El principal problema encontrado en el código han sido los bucles anidados for. Para intentar solventar el costo temporal de la ejecución de cada bucle se han realizado tres aproximaciones
+El principal problema encontrado en el código han sido los bucles anidados *for*. Para intentar solventar el costo temporal de la ejecución de cada bucle se han realizado tres aproximaciones
 1. **Optimización de Bucles**: En esta aproximación solo se han optimizado los bucles, no se han usado herramientas de paralelización
 2. **OpenMP sin Optimización de Bucles**: En esta aproximación se ha usado únicamente la API de **OpenMP** para probar el tiempo de ejecución de los bucles sin optimizar
 3. **OpenMP con Optimización de Bucles**: En esta aproximación se ha usado la API de **OpenMP**, junto con los bucles optimizados para probar el tiempo de ejecución de los bucles optimizar
@@ -15,7 +22,7 @@ El tiempo de cómputo de un bucle *for* es **O(n)**, siendo **n** en número de 
 
 El objetivo es reducir la complejidad del algoritmo en todo los posible. En un primer momento se tenían seis bucles anidados, tras finalizar la optimización de los bucles, se tienen únicamente tres bucles anidados.
 
-**Búcle sin modificar**
+**Búcle Principal sin modificar**
 ````c
 for (unsigned int y = 0; y < HEIGHT; y += BS){
   for (unsigned int x = 0; x < WIDTH; x += BS){
@@ -37,7 +44,7 @@ for (unsigned int y = 0; y < HEIGHT; y += BS){
 }
 ````
 
-**Bucle modificado**
+**Bucle Principal modificado**
 ````c
 for (i = 0; i < (HEIGHT * WIDTH)/BS; i += BS){
   x = i % WIDTH;
@@ -59,7 +66,7 @@ for (i = 0; i < (HEIGHT * WIDTH)/BS; i += BS){
 }
 ````
 
-**Bucle sin modificar**
+**Bucle MSE sin modificar**
 ````c
 float MSE(unsigned char *bloque_actual, unsigned char *bloque_referencia){
   float error = 0;
@@ -71,7 +78,7 @@ float MSE(unsigned char *bloque_actual, unsigned char *bloque_referencia){
  return error / (BS*BS);
 }
 ````
-**Bucle modificado**
+**Bucle MSE modificado**
 ````c
 float MSE(unsigned char *bloque_actual, unsigned char *bloque_referencia){
   float error = 0;
@@ -107,9 +114,9 @@ No se aprecia la optimización de los bucles anidados ya que creemos que, al ser
 
 En esta segunda aproximación se quiere probar el tiempo de ejecución del algoritmo haciendo uso únicamente de la API de **OpenMP**.
 
-## Parámetros optimizados
+### Parámetros optimizados
 
-### Bucle principal
+#### Bucle principal
 ````c
 #pragma omp parallel for private(x,y,j,k,z, coste_bloque) schedule(dynamic) num_threads(hilos)
 ````
@@ -124,7 +131,7 @@ En esta segunda aproximación se quiere probar el tiempo de ejecución del algor
  - **K,Z**: Usadas para calcular el ME, su rango va de 0-32
  - **Coste_bloque**: Variable que almacena el resultado de la función MSE
 
-### Bucle de la función MSE
+#### Bucle de la función MSE
 ````c
 #pragma omp reducer(+:error) parallel  for  private(x,y)  schedule(dynamic) num_threads(hilos)
 ````
@@ -135,45 +142,89 @@ En esta segunda aproximación se quiere probar el tiempo de ejecución del algor
 - **Variables privadas**:
  - **X,Y**: Usado para calcular el error, sus rangos son de 0-16
 
-## Con OpenMP y Bucles Optimizados
-
-En esta tercera aproximación se quiere probar el tiempo de ejecución del algoritmo haciendo uso de la API de **OpenMP y la Optimización de Bucles** realizada.
-
-## Parámetros optimizados
-
-### Bucle principal
-````c
-#pragma omp parallel for private(x,y,j,k,z, coste_bloque) schedule(dynamic) num_threads(hilos)
-````
-
-- **num_threads(hilos)**: Asigna el número de hilos introducidos por la entrada de texto para la ejecución del a sección paralela
-- **Pragma omp parallel for**: Indica que el bucle se ejecutará con los hilos indicados anteriormente
-- **Scheduler**: Aquí definimos la forma de planificar las iteraciones de los bloques, en este caso no se han observado diferencias significativas, por lo que se ha decidido mantener el modo dinámico
-- **Variables privadas**:
- - **X**: Corresponde con el valor de la anchura de la imagen, su rango es de 0-1280
- - **Y**: Corresponde con el valor de la altura de la imagen, su rango es de 0-720
- - **J**: Usada en el bucle interior, cuyo rango es 96 *16
- - **K,Z**: Usadas para calcular el ME, su rango va de 0-32
- - **Coste_bloque**: Variable que almacena el resultado de la función MSE
-
-### Bucle de la función MSE
-````c
-#pragma omp reducer(+:error) parallel  for  private(x,y)  schedule(dynamic) num_threads(hilos)
-````
-- **num_threads(hilos)**: Asigna el número de hilos introducidos por la entrada de texto para la ejecución del a sección paralela
-- **Pragma omp parallel for**: Indica que el bucle se ejecutará con los hilos indicados anteriormente
-- **Scheduler**: Aquí definimos la forma de planificar las iteraciones de los bloques, en este caso no se han observado diferencias significativas, por lo que se ha decidido mantener el modo dinámico
-- **Reducer (+:error)**: Cláusula específica de openmp para indicar la reducción de un bucle.
-- **Variables privadas**:
- - **X,Y**: Usado para calcular el error, sus rangos son de 0-16
-
-## Resultados obtenidos
+### Resultados obtenidos
 
 Para comprobar la optimización de código haciendo uso de OpenMP, se van a realizar varias ejecuciones modificando el número de los hilos
 
 Los resultados obtenidos en la columna de **Tiempo Optimizado**, es la media aritmética del resultado obtenido tras 10 ejecuciones
 
-### Scheduler Dinámico
+#### Scheduler Dinámico
+
+|           | Tiempo sin optimizar | Tiempo optimizado |
+|:---------:|:--------------------:|:-----------------:|
+|  2 Hilos  |       80.092631      |     41.286586     |
+|  4 Hilos  |       80.092631      |     20.998403     |
+|  8 Hilos  |       80.092631      |     13.037493     |
+|  16 Hilos |       80.092631      |     12.401389     |
+|  32 Hilos |       80.092631      |     12.913650     |
+|  64 Hilos |       80.092631      |     12.206220     |
+| 128 Hilos |       80.092631      |     12.148841     |
+| 256 Hilos |       80.092631      |     12.270545     |
+| 512 Hilos |       80.092631      |     12.182388     |
+
+#### Scheduler Estático
+
+|           | Tiempo sin optimizar | Tiempo optimizado |
+|:---------:|:--------------------:|:-----------------:|
+|  2 Hilos  |       80.092631      |     42.355106     |
+|  4 Hilos  |       80.092631      |     20.713961     |
+|  8 Hilos  |       80.092631      |     13.325617     |
+|  16 Hilos |       80.092631      |     12.817600     |
+|  32 Hilos |       80.092631      |     12.532386     |
+|  64 Hilos |       80.092631      |     12.728742     |
+| 128 Hilos |       80.092631      |     12.201151     |
+| 256 Hilos |       80.092631      |     11.997898     |
+| 512 Hilos |       80.092631      |     11.897121     |
+
+### Conclusiones
+
+- **Scheduler Estático VS Scheduler Dinámico**: Comparando en tiempo de ejecución de la paralelización con los dos Scheduler
+- **Scheduler Estático**: Mejora con un número elevado de hilos, pero empeora con un número bajo de hilos
+- **Scheduler Dinámico**: Mejora con un número bajo ed hilos, pero empeora con un número alto de hilos
+
+A partir de 8 hilos es muy costoso reducir el tiempo de ejecución. El coste de realizar la paralelización con un número mayor de 8 hilos creemos que o es rentable.   
+
+No se aprecia la optimización de los bucles anidados ya que creemos que, al ser un código pequeño, la complejidad del algoritmo no influye mucho en l tiempo final  
+
+## Con OpenMP y Bucles Optimizados
+
+En esta tercera aproximación se quiere probar el tiempo de ejecución del algoritmo haciendo uso de la API de **OpenMP y la Optimización de Bucles** realizada.
+
+### Parámetros optimizados
+
+#### Bucle principal
+````c
+#pragma omp parallel for private(x,y,j,k,z, coste_bloque) schedule(dynamic) num_threads(hilos)
+````
+
+- **num_threads(hilos)**: Asigna el número de hilos introducidos por la entrada de texto para la ejecución del a sección paralela
+- **Pragma omp parallel for**: Indica que el bucle se ejecutará con los hilos indicados anteriormente
+- **Scheduler**: Aquí definimos la forma de planificar las iteraciones de los bloques, en este caso no se han observado diferencias significativas, por lo que se ha decidido mantener el modo dinámico
+- **Variables privadas**:
+ - **X**: Corresponde con el valor de la anchura de la imagen, su rango es de 0-1280
+ - **Y**: Corresponde con el valor de la altura de la imagen, su rango es de 0-720
+ - **J**: Usada en el bucle interior, cuyo rango es 96 *16
+ - **K,Z**: Usadas para calcular el ME, su rango va de 0-32
+ - **Coste_bloque**: Variable que almacena el resultado de la función MSE
+
+#### Bucle de la función MSE
+````c
+#pragma omp reducer(+:error) parallel  for  private(x,y)  schedule(dynamic) num_threads(hilos)
+````
+- **num_threads(hilos)**: Asigna el número de hilos introducidos por la entrada de texto para la ejecución del a sección paralela
+- **Pragma omp parallel for**: Indica que el bucle se ejecutará con los hilos indicados anteriormente
+- **Scheduler**: Aquí definimos la forma de planificar las iteraciones de los bloques, en este caso no se han observado diferencias significativas, por lo que se ha decidido mantener el modo dinámico
+- **Reducer (+:error)**: Cláusula específica de openmp para indicar la reducción de un bucle.
+- **Variables privadas**:
+ - **X,Y**: Usado para calcular el error, sus rangos son de 0-16
+
+### Resultados obtenidos
+
+Para comprobar la optimización de código haciendo uso de OpenMP, se van a realizar varias ejecuciones modificando el número de los hilos
+
+Los resultados obtenidos en la columna de **Tiempo Optimizado**, es la media aritmética del resultado obtenido tras 10 ejecuciones
+
+#### Scheduler Dinámico
 
 |           | Tiempo sin optimizar | Tiempo optimizado |
 |:---------:|:--------------------:|:-----------------:|
@@ -187,7 +238,7 @@ Los resultados obtenidos en la columna de **Tiempo Optimizado**, es la media ari
 | 256 Hilos |       80.092631      |     12.041000     |
 | 512 Hilos |       80.092631      |     11.860091     |
 
-### Scheduler Estático
+#### Scheduler Estático
 
 |           | Tiempo sin optimizar | Tiempo optimizado |
 |:---------:|:--------------------:|:-----------------:|
@@ -207,11 +258,31 @@ Los resultados obtenidos en la columna de **Tiempo Optimizado**, es la media ari
  - **Scheduler Estático**: Mejora con un número elevado de hilos, pero empeora con un número bajo de hilos
  - **Scheduler Dinámico**: Mejora con un número bajo ed hilos, pero empeora con un número alto de hilos
 
+A partir de 8 hilos es muy costoso reducir el tiempo de ejecución. El coste de realizar la paralelización con un número mayor de 8 hilos creemos que no es rentable.   
 
+No se aprecia la optimización de los bucles anidados ya que creemos que, al ser un código pequeño, la complejidad del algoritmo no influye mucho en el tiempo final  
+
+## Comandos Usados
+
+Para realizar la ejecución de la práctica se necesitan ejecutar tres comandos
+1. Compilación del código
+```c
+gcc fsbma.c -o fsbma -lm -fopenmp
+```
+2. Ejecución del código
+```c
+./fsbma  <número de Hilos>
+```
+3. La comparativa del resultado obtenido con el resultado inicial sin optimizar
+```c
+./fsbma <número de Hilos> | diff resultado.txt -
+```
+
+## Conclusiones Finales
 
 ## Problemas encontrados
-1- Problema con el cálculo de tiempo
+1. La medición con la función **clock_gettime()**, no ofrecía un tiempo correcto al ejecutar el programa con varios hilos, el problema era debido a el parámetro *CLOCK_PROCESS_CPUTIME_ID*, si se sustituye por *CLOCK_MONOTONIC* el tiempo es correcto, para evitar problemas se ha sustituido por **omp_get_wtime()** ya que es una medición específica del tiempo para su uso en programas paralelos.
 ````c
 clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&inicio);
 ````
-2- Error con **collapse** en scheduler
+2. Error con **collapse** en Scheduler: Se ha intentado aplicar **collapse** en el bucle principal, pero al aplicarlo se alteraba el resultado de la salida, por lo que se ha descartado  
