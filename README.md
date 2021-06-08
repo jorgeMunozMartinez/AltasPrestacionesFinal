@@ -15,6 +15,8 @@ El principal problema encontrado en el código han sido los bucles anidados *for
 2. **OpenMP sin Optimización de Bucles**: En esta aproximación se ha usado únicamente la API de **OpenMP** para probar el tiempo de ejecución de los bucles sin optimizar
 3. **OpenMP con Optimización de Bucles**: En esta aproximación se ha usado la API de **OpenMP**, junto con los bucles optimizados para probar el tiempo de ejecución de los bucles optimizar
 
+Aunque se ha intentado ejecutar las pruebas con el mismo entorno. La máquina que las ha ejecutado ya estaba ejecutando otros procesos, es posible que los resultados obtenidos se vean alterados por los procesos que esté ejecutando la máquina.
+
 ## Sin OpenMP y con Bucles Optimizados
 
 En una primera aproximación para mejorar el tiempo de cómputo. Se ha reescrito los bucles anidados.
@@ -167,15 +169,15 @@ Los resultados obtenidos en la columna de **Tiempo Optimizado**, es la media ari
 
 |           | Tiempo sin optimizar | Tiempo optimizado |
 |:---------:|:--------------------:|:-----------------:|
-|  2 Hilos  |       80.092631      |     42.355106     |
-|  4 Hilos  |       80.092631      |     20.713961     |
-|  8 Hilos  |       80.092631      |     13.325617     |
-|  16 Hilos |       80.092631      |     12.817600     |
-|  32 Hilos |       80.092631      |     12.532386     |
-|  64 Hilos |       80.092631      |     12.728742     |
-| 128 Hilos |       80.092631      |     12.201151     |
-| 256 Hilos |       80.092631      |     11.997898     |
-| 512 Hilos |       80.092631      |     11.897121     |
+|  2 Hilos  |       80.092631      |     41.812975     |
+|  4 Hilos  |       80.092631      |     21.543593     |
+|  8 Hilos  |       80.092631      |     12.527022     |
+|  16 Hilos |       80.092631      |     12.766653     |
+|  32 Hilos |       80.092631      |     12.678141     |
+|  64 Hilos |       80.092631      |     12.601649     |
+| 128 Hilos |       80.092631      |     12.143620     |
+| 256 Hilos |       80.092631      |     12.530999     |
+| 512 Hilos |       80.092631      |     12.622883     |
 
 ### Conclusiones
 
@@ -280,6 +282,10 @@ gcc fsbma.c -o fsbma -lm -fopenmp
 ```
 
 ## Conclusiones Finales
+
+Tras la realización de este trabajo podemos concluir que la paralelización por sí sola es muy beneficiosa en cuestión de tiempo. Pero para realizarla de forma adecuada es necesario realizar un análisis del código para buscar dependencias de variables entre hilos y condiciones de carrera.
+
+También hemos podido comprobar que, aunque openmp realiza una paralelización de bucles muy eficiente. Hemos conseguido mejorar en los tiempos de ejecución al realizar distintas modificaciones en los bucles. Dicho esto, podemos afirmar que con una mayor reducción manual de los bucles se podría mejorar aún más los resultados de esta práctica, dada la limitación de alcance de esta práctica no se ha podido realizar una mayor reducción.
 
 ## Problemas encontrados
 En la realización de la práctica se han encontrado ciertos problemas:
