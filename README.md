@@ -71,7 +71,7 @@ float MSE(unsigned char *bloque_actual, unsigned char *bloque_referencia){
   for (i= 0; i < BS*BS; i++){
     y= i/ BS;
     x= i % BS;
-      error += pow((bloque_actual[y * WIDTH + x] - bloque_referencia[y * (WIDTH + 2 * SA) + x]), 2);  
+    error += pow((bloque_actual[y * WIDTH + x] - bloque_referencia[y * (WIDTH + 2 * SA) + x]), 2);  
     }
   return error / (BS*BS);
 }
@@ -124,7 +124,7 @@ No se aprecia la optimización de los bucles anidados ya que creemos que, al ser
 - **Scheduler**: Aquí definimos la forma de planificar las iteraciones de los bloques, en este caso no se han observado diferencias significativas, por lo que se ha decidido mantener el modo dinámico
 - **Reducer (+:error)**: Cláusula específica de openmp para indicar la reducción de un bucle.
 - **Variables privadas**:
- - **X,Y**: Usado para calcular el error, sus rangos son de 0-16 
+ - **X,Y**: Usado para calcular el error, sus rangos son de 0-16
 
 ## Resultados obtenidos
 
