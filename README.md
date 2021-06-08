@@ -1,10 +1,19 @@
 # Reducción del tiempo de cómputo de la etapa de estimación de movimiento en algoritmos de codificación de vídeo
 
-Para la realización de esta práctica se ha realizado varias pruebas
+Para la realización de esta práctica se ha realizado varias pruebas.
 
-## Bucles Optimizados
+El principal problema encontrado en el código han sido los bucles anidados for. Para intentar solventar el costo temporal de la ejecución de cada bucle se han realizado tres aproximaciones
+1. **Optimización de Bucles**: En esta aproximación solo se han optimizado los bucles, no se han usado herramientas de paralelización
+2. **OpenMP sin Optimización de Bucles**: En esta aproximación se ha usado únicamente la API de **OpenMP** para probar el tiempo de ejecución de los bucles sin optimizar
+3. **OpenMP con Optimización de Bucles**: En esta aproximación se ha usado la API de **OpenMP**, junto con los bucles optimizados para probar el tiempo de ejecución de los bucles optimizar
+
+## Sin OpenMP y con Bucles Optimizados
 
 En una primera aproximación para mejorar el tiempo de cómputo. Se ha reescrito los bucles anidados.
+
+El tiempo de cómputo de un bucle *for* es **O(n)**, siendo **n** en número de iteraciones realizadas. La complejidad de un bucle anidado es de **O(n^x)** siendo **n** el número de iteraciones y **x** la cantidad de *for* anidados.
+
+El objetivo es reducir la complejidad del algoritmo en todo los posible. En un primer momento se tenían seis bucles anidados, tras finalizar la optimización de los bucles, se tienen únicamente tres bucles anidados.
 
 **Búcle sin modificar**
 ````c
@@ -94,7 +103,9 @@ Como se puede apreciar. La diferencia de los tiempos de ejecución, solo modific
 
 No se aprecia la optimización de los bucles anidados ya que creemos que, al ser un código pequeño, la complejidad del algoritmo no influye mucho en el tiempo final.
 
-## OpenMP si Bucles Optmizados
+## Con OpenMP y sin Bucles Optimizados
+
+En esta segunda aproximación se quiere probar el tiempo de ejecución del algoritmo haciendo uso únicamente de la API de **OpenMP**.
 
 ## Parámetros optimizados
 
@@ -113,7 +124,37 @@ No se aprecia la optimización de los bucles anidados ya que creemos que, al ser
  - **K,Z**: Usadas para calcular el ME, su rango va de 0-32
  - **Coste_bloque**: Variable que almacena el resultado de la función MSE
 
+### Bucle de la función MSE
+````c
+#pragma omp reducer(+:error) parallel  for  private(x,y)  schedule(dynamic) num_threads(hilos)
+````
+- **num_threads(hilos)**: Asigna el número de hilos introducidos por la entrada de texto para la ejecución del a sección paralela
+- **Pragma omp parallel for**: Indica que el bucle se ejecutará con los hilos indicados anteriormente
+- **Scheduler**: Aquí definimos la forma de planificar las iteraciones de los bloques, en este caso no se han observado diferencias significativas, por lo que se ha decidido mantener el modo dinámico
+- **Reducer (+:error)**: Cláusula específica de openmp para indicar la reducción de un bucle.
+- **Variables privadas**:
+ - **X,Y**: Usado para calcular el error, sus rangos son de 0-16
 
+## Con OpenMP y Bucles Optimizados
+
+En esta tercera aproximación se quiere probar el tiempo de ejecución del algoritmo haciendo uso de la API de **OpenMP y la Optimización de Bucles** realizada.
+
+## Parámetros optimizados
+
+### Bucle principal
+````c
+#pragma omp parallel for private(x,y,j,k,z, coste_bloque) schedule(dynamic) num_threads(hilos)
+````
+
+- **num_threads(hilos)**: Asigna el número de hilos introducidos por la entrada de texto para la ejecución del a sección paralela
+- **Pragma omp parallel for**: Indica que el bucle se ejecutará con los hilos indicados anteriormente
+- **Scheduler**: Aquí definimos la forma de planificar las iteraciones de los bloques, en este caso no se han observado diferencias significativas, por lo que se ha decidido mantener el modo dinámico
+- **Variables privadas**:
+ - **X**: Corresponde con el valor de la anchura de la imagen, su rango es de 0-1280
+ - **Y**: Corresponde con el valor de la altura de la imagen, su rango es de 0-720
+ - **J**: Usada en el bucle interior, cuyo rango es 96 *16
+ - **K,Z**: Usadas para calcular el ME, su rango va de 0-32
+ - **Coste_bloque**: Variable que almacena el resultado de la función MSE
 
 ### Bucle de la función MSE
 ````c
@@ -167,21 +208,6 @@ Los resultados obtenidos en la columna de **Tiempo Optimizado**, es la media ari
  - **Scheduler Dinámico**: Mejora con un número bajo ed hilos, pero empeora con un número alto de hilos
 
 
-## OpenMP y Bucles Optimizados
-
-Para comprobar la optimización de código haciendo uso de OpenMP, se van a realizar varias ejecuciones modificando el número de los hilos
-
-### 1 Hilo
-
-### 8 Hilos
-
-### 16 Hilos
-
-### 32 Hilos
-
-### 64 Hilos
-
-### 128 hilos
 
 ## Problemas encontrados
 1- Problema con el cálculo de tiempo
