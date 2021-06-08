@@ -1,9 +1,10 @@
 # Índice
-1. [Sin OpenMP y con Bucles Optimizados](#id1)
-2. [Con OpenMP y sin Bucles Optimizados](#id2)
-3. [Comandos Usados](#id)
-4. [Conclusiones Finales](#id)
-5. [Problemas](#id)
+1. [Sin OpenMP y con Bucles Optimizados](#sin-openmp-y-con-bucles-optimizados)
+2. [Con OpenMP y sin Bucles Optimizados](#con-openmp-y-sin-bucles-optimizados)
+3. [Con Openmp y Bucles Otimizados](#con-openmp-y-bucles-optimizados)
+3. [Comandos Usados](#comandos-usados)
+4. [Conclusiones Finales](#conclusiones-finales)
+5. [Problemas Encontrados](#problemas-encontrados)
 
 # Reducción del tiempo de cómputo de la etapa de estimación de movimiento en algoritmos de codificación de vídeo
 
@@ -281,6 +282,7 @@ gcc fsbma.c -o fsbma -lm -fopenmp
 ## Conclusiones Finales
 
 ## Problemas encontrados
+En la realización de la práctica se han encontrado ciertos problemas:
 1. La medición con la función **clock_gettime()**, no ofrecía un tiempo correcto al ejecutar el programa con varios hilos, el problema era debido a el parámetro *CLOCK_PROCESS_CPUTIME_ID*, si se sustituye por *CLOCK_MONOTONIC* el tiempo es correcto, para evitar problemas se ha sustituido por **omp_get_wtime()** ya que es una medición específica del tiempo para su uso en programas paralelos.
 ````c
 clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&inicio);
