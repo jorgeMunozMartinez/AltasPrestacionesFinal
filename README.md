@@ -8,6 +8,8 @@
 
 # Reducción del tiempo de cómputo de la etapa de estimación de movimiento en algoritmos de codificación de vídeo
 
+Enlace a GitHUb: https://github.com/jorgeMunozMartinez/AltasPrestacionesFinal#sin-openmp-y-con-bucles-optimizados
+
 Para la realización de esta práctica se ha realizado varias pruebas.
 
 El principal problema encontrado en el código han sido los bucles anidados *for*. Para intentar solventar el costo temporal de la ejecución de cada bucle se han realizado tres aproximaciones
@@ -83,18 +85,32 @@ float MSE(unsigned char *bloque_actual, unsigned char *bloque_referencia){
 ````
 **Bucle MSE modificado**
 ````c
-float MSE(unsigned char *bloque_actual, unsigned char *bloque_referencia){
+float MSE(unsigned char * bloque_actual, unsigned char * bloque_referencia) {
   float error = 0;
-  int i=0;
-  unsigned char x,y, z;   
-  for (i= 0; i < BS*BS; i++){
-    y= i/ BS;
-    x= i % BS;
-    error += pow((bloque_actual[y * WIDTH + x] - bloque_referencia[y * (WIDTH + 2 * SA) + x]), 2);  
-    }
-  return error / (BS*BS);
+  int i = 0;
+  unsigned char x, y, z;
+  for (y = 0; y < BS ; y++) {
+    error += pow((bloque_actual[y * WIDTH + 0] - bloque_referencia[y * (WIDTH + 2 * SA) + 0]), 2);
+    error += pow((bloque_actual[y * WIDTH + 1] - bloque_referencia[y * (WIDTH + 2 * SA) + 1]), 2);
+    error += pow((bloque_actual[y * WIDTH + 2] - bloque_referencia[y * (WIDTH + 2 * SA) + 2]), 2);
+    error += pow((bloque_actual[y * WIDTH + 3] - bloque_referencia[y * (WIDTH + 2 * SA) + 3]), 2);
+    error += pow((bloque_actual[y * WIDTH + 4] - bloque_referencia[y * (WIDTH + 2 * SA) + 4]), 2);
+    error += pow((bloque_actual[y * WIDTH + 5] - bloque_referencia[y * (WIDTH + 2 * SA) + 5]), 2);
+    error += pow((bloque_actual[y * WIDTH + 6] - bloque_referencia[y * (WIDTH + 2 * SA) + 6]), 2);
+    error += pow((bloque_actual[y * WIDTH + 7] - bloque_referencia[y * (WIDTH + 2 * SA) + 7]), 2);
+    error += pow((bloque_actual[y * WIDTH + 8] - bloque_referencia[y * (WIDTH + 2 * SA) + 8]), 2);
+    error += pow((bloque_actual[y * WIDTH + 9] - bloque_referencia[y * (WIDTH + 2 * SA) + 9]), 2);
+    error += pow((bloque_actual[y * WIDTH + 10] - bloque_referencia[y * (WIDTH + 2 * SA) + 10]), 2);
+    error += pow((bloque_actual[y * WIDTH + 11] - bloque_referencia[y * (WIDTH + 2 * SA) + 11]), 2);
+    error += pow((bloque_actual[y * WIDTH + 12] - bloque_referencia[y * (WIDTH + 2 * SA) + 12]), 2);
+    error += pow((bloque_actual[y * WIDTH + 13] - bloque_referencia[y * (WIDTH + 2 * SA) + 13]), 2);
+    error += pow((bloque_actual[y * WIDTH + 14] - bloque_referencia[y * (WIDTH + 2 * SA) + 14]), 2);
+    error += pow((bloque_actual[y * WIDTH + 15] - bloque_referencia[y * (WIDTH + 2 * SA) + 15]), 2);
+  }
+  return error / (BS * BS);
 }
 ````
+
 ### Conclusiones
 **Tiempo de ejecución sin optimizar los bucles**
 ````bash
