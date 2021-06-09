@@ -110,6 +110,8 @@ float MSE(unsigned char * bloque_actual, unsigned char * bloque_referencia) {
   return error / (BS * BS);
 }
 ````
+### Desenrrollado de bucles
+Se ha decidido aplicar la técnica de Desenrollado de bucles *loop unrolling*, usado para mejorar la velocidad de ejecución del programa. El único problema de esta técnica es que empeora la legibilidad del código, aunque en nuestro caso nuestro objetivo principal es la mejora del tiempo de ejecución, para entregar un código más "limpio" hemos decidido aplicarlo solo en el bucle más pequeño a modo de ejemplo, pero de igual forma esta técnica se podría aplicar a los demás bucles.
 
 ### Conclusiones
 **Tiempo de ejecución sin optimizar los bucles**
