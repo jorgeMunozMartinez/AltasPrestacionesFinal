@@ -15,13 +15,13 @@ Para la realización de esta práctica se ha realizado varias pruebas.
 El principal problema encontrado en el código han sido los bucles anidados *for*. Para intentar solventar el costo temporal de la ejecución de cada bucle se han realizado tres aproximaciones
 1. **Optimización de Bucles**: En esta aproximación solo se han optimizado los bucles, no se han usado herramientas de paralelización
 2. **OpenMP sin Optimización de Bucles**: En esta aproximación se ha usado únicamente la API de **OpenMP** para probar el tiempo de ejecución de los bucles sin optimizar
-3. **OpenMP con Optimización de Bucles**: En esta aproximación se ha usado la API de **OpenMP**, junto con los bucles optimizados para probar el tiempo de ejecución de los bucles optimizar
+3. **OpenMP con Optimización de Bucles**: En esta aproximación se ha usado la API de **OpenMP**, junto con los bucles optimizados para probar el tiempo de ejecución de los bucles 
 
-Aunque se ha intentado ejecutar las pruebas con el mismo entorno. La máquina que las ha ejecutado ya estaba ejecutando otros procesos, es posible que los resultados obtenidos se vean alterados por los procesos que esté ejecutando la máquina.
+Aunque se ha intentado ejecutar las pruebas con el mismo entorno, la máquina que las ha ejecutado ya estaba ejecutando otros procesos, es posible que los resultados obtenidos se vean alterados por los procesos que esté ejecutando la máquina.
 
 ## Sin OpenMP y con Bucles Optimizados
 
-En una primera aproximación para mejorar el tiempo de cómputo. Se ha reescrito los bucles anidados.
+En una primera aproximación para mejorar el tiempo de cómputo. Se han reescrito los bucles anidados.
 
 El tiempo de cómputo de un bucle *for* es **O(n)**, siendo **n** en número de iteraciones realizadas. La complejidad de un bucle anidado es de **O(n^x)** siendo **n** el número de iteraciones y **x** la cantidad de *for* anidados.
 
@@ -111,7 +111,7 @@ float MSE(unsigned char * bloque_actual, unsigned char * bloque_referencia) {
 }
 ````
 ### Desenrrollado de bucles
-Se ha decidido aplicar la técnica de Desenrollado de bucles *loop unrolling*, usado para mejorar la velocidad de ejecución del programa. El único problema de esta técnica es que empeora la legibilidad del código, aunque en nuestro caso nuestro objetivo principal es la mejora del tiempo de ejecución, para entregar un código más "limpio" hemos decidido aplicarlo solo en el bucle más pequeño a modo de ejemplo, pero de igual forma esta técnica se podría aplicar a los demás bucles.
+Se ha decidido aplicar la técnica de Desenrollado de bucles (*loop unrolling*), usado para mejorar la velocidad de ejecución del programa. El único problema de esta técnica es que empeora la legibilidad del código, aunque en nuestro caso nuestro objetivo principal es la mejora del tiempo de ejecución, para entregar un código más "limpio" hemos decidido aplicarlo solo en el bucle más pequeño a modo de ejemplo, pero de igual forma esta técnica se podría aplicar a los demás bucles.
 
 ### Conclusiones
 **Tiempo de ejecución sin optimizar los bucles**
@@ -154,14 +154,14 @@ En esta segunda aproximación se quiere probar el tiempo de ejecución del algor
 
 #### Bucle de la función MSE
 ````c
-#pragma omp reducer(+:error) parallel  for  private(x,y)  schedule(dynamic) num_threads(hilos)
+#pragma omp reducer(+:error) parallel  for   schedule(dynamic) num_threads(hilos)
 ````
 - **num_threads(hilos)**: Asigna el número de hilos introducidos por la entrada de texto para la ejecución del a sección paralela
 - **Pragma omp parallel for**: Indica que el bucle se ejecutará con los hilos indicados anteriormente
 - **Scheduler**: Aquí definimos la forma de planificar las iteraciones de los bloques, en este caso no se han observado diferencias significativas, por lo que se ha decidido mantener el modo dinámico
 - **Reducer (+:error)**: Cláusula específica de openmp para indicar la reducción de un bucle.
-- **Variables privadas**:
- - **X,Y**: Usado para calcular el error, sus rangos son de 0-16
+
+
 
 ### Resultados obtenidos
 
@@ -230,14 +230,13 @@ En esta tercera aproximación se quiere probar el tiempo de ejecución del algor
 
 #### Bucle de la función MSE
 ````c
-#pragma omp reducer(+:error) parallel  for  private(x,y)  schedule(dynamic) num_threads(hilos)
+#pragma omp reducer(+:error) parallel  for  schedule(dynamic) num_threads(hilos)
 ````
 - **num_threads(hilos)**: Asigna el número de hilos introducidos por la entrada de texto para la ejecución del a sección paralela
 - **Pragma omp parallel for**: Indica que el bucle se ejecutará con los hilos indicados anteriormente
 - **Scheduler**: Aquí definimos la forma de planificar las iteraciones de los bloques, en este caso no se han observado diferencias significativas, por lo que se ha decidido mantener el modo dinámico
 - **Reducer (+:error)**: Cláusula específica de openmp para indicar la reducción de un bucle.
-- **Variables privadas**:
- - **X,Y**: Usado para calcular el error, sus rangos son de 0-16
+
 
 ### Resultados obtenidos
 
@@ -303,7 +302,7 @@ gcc fsbma.c -o fsbma -lm -fopenmp
 
 Tras la realización de este trabajo podemos concluir que la paralelización por sí sola es muy beneficiosa en cuestión de tiempo. Pero para realizarla de forma adecuada es necesario realizar un análisis del código para buscar dependencias de variables entre hilos y condiciones de carrera.
 
-También hemos podido comprobar que, aunque openmp realiza una paralelización de bucles muy eficiente. Hemos conseguido mejorar en los tiempos de ejecución al realizar distintas modificaciones en los bucles. Dicho esto, podemos afirmar que con una mayor reducción manual de los bucles se podría mejorar aún más los resultados de esta práctica, dada la limitación de alcance de esta práctica no se ha podido realizar una mayor reducción.
+También hemos podido comprobar que, aunque openmp realiza una paralelización de bucles muy eficiente. Hemos conseguido mejorar en los tiempos de ejecución al aplicar distintas técnicas de optimización de bucles. Dicho esto, podemos afirmar que con una mayor reducción manual de los bucles se podría mejorar aún más los resultados de esta práctica, pero dada la limitación de alcance de esta práctica no se ha podido realizar una mayor reducción.
 
 ## Problemas encontrados
 En la realización de la práctica se han encontrado ciertos problemas:
